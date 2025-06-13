@@ -2,6 +2,10 @@
 
 Este projeto é um painel administrativo para monitoramento de vendas de passagens, viagens e encomendas, com destaque para o **gráfico de vendas por cidade de origem**. O sistema foi desenvolvido em PHP, MySQL e JavaScript, utilizando Google Charts para visualização dos dados.
 
+## Screenshot do Projeto
+
+https://github.com/robertosilva19/grafico_de_dados_cidades/blob/5f15f386425fda20fb5896720127bb5b3384f5f7/grafico.jpeg
+
 ## Funcionalidades
 
 - **Dashboard** com estatísticas de viagens, passagens e encomendas do mês.
