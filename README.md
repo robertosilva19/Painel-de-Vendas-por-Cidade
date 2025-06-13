@@ -4,7 +4,7 @@ Este projeto é um painel administrativo para monitoramento de vendas de passage
 
 ## Screenshot do Projeto
 
-https://github.com/robertosilva19/grafico_de_dados_cidades/blob/5f15f386425fda20fb5896720127bb5b3384f5f7/grafico.jpeg
+![Exemplo do Gráfico](grafico.jpeg)
 
 ## Funcionalidades
 
