@@ -5,7 +5,7 @@ Este projeto é um painel administrativo para monitoramento de vendas de passage
 ## Screenshot do Projeto
 
 ![Exemplo do Gráfico](grafico.jpeg)
-!Tela Atualizada (https://github.com/robertosilva19/Painel-de-Vendas-por-Cidade/blob/b1495a8a56a9ec6edca591b29da70c769beb9f89/tela%20atualizada.jpeg)
+![Tela Atualizada](https://github.com/robertosilva19/Painel-de-Vendas-por-Cidade/blob/b1495a8a56a9ec6edca591b29da70c769beb9f89/tela%20atualizada.jpeg)
 
 ## Funcionalidades
 
