@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once "classes/Viagens.class.php";
 require_once "classes/Passageiros.class.php";
 require_once "classes/Encomendas.class.php";
@@ -11,7 +11,7 @@ $totaEcomendaMesAtu = $totalEncomendasMesAtual->findAllListaEncomendasMesAtual()
 
 $totalPassageirosMesAtual = new Passageiros;
 $totaPassageiroMesAtu = $totalPassageirosMesAtual->findAllListaPassageirosMesAtual();
-?>
+// ?>
 
 <div class="row">
     <div class="col-sm-4 col-xs-6">
@@ -40,114 +40,234 @@ $totaPassageiroMesAtu = $totalPassageirosMesAtual->findAllListaPassageirosMesAtu
         </div>
     </div>
 </div>
-
-<!-- Novo gráfico de vendas por cidade -->
 <div class="row" style="margin-top: 20px;">
     <div class="col-sm-8">
         <div class="panel panel-primary" data-collapsed="0">
             <div class="panel-heading">
-                <div class="panel-title">Vendas de Passagens por Cidade</div>
+                <div class="panel-title">Viagens e Passageiros por Mês</div>
             </div>
             <div class="panel-body">
-                <!-- Filtro de datas -->
-                <!-- <div class="row" style="margin-bottom: 15px;">
+                <div class="row" style="margin-bottom: 15px;">
                     <div class="col-sm-3">
-                        <label>Data Inicial:</label>
-                        <input type="date" id="dataInicial" class="form-control" />
-                    </div>
-                    <div class="col-sm-3">
-                        <label>Data Final:</label>
-                        <input type="date" id="dataFinal" class="form-control" />
+                        <label>Ano:</label>
+                        <select id="anoSelect" class="form-control">
+                            <option value="2023">2023</option>
+                            <option value="2024">2024</option>
+                            <option value="2025" selected>2025</option>
+                        </select>
                     </div>
                     <div class="col-sm-3">
                         <label>&nbsp;</label>
-                        <button type="button" id="filtrarBtn" class="btn btn-primary form-control">
+                        <button type="button" id="filtrarViagensBtn" class="btn btn-primary form-control">
                             <i class="fa fa-search"></i> Filtrar
                         </button>
                     </div>
-                    <div class="col-sm-3">
-                        <label>&nbsp;</label>
-                        <button type="button" id="limparFiltroBtn" class="btn btn-default form-control">
-                            <i class="fa fa-refresh"></i> Semana Atual
-                        </button>
-                    </div>
-                </div> -->
-                
-                <div id="piechart" style="width: 100%; height: 400px;"></div>
-                
-                <div id="noDataMessage" style="display: none; text-align: center; padding: 50px;">
-                    <i class="fa fa-info-circle fa-3x text-muted"></i>
-                    <p class="text-muted">Nenhuma venda encontrada para o período selecionado.</p>
                 </div>
                 
-                <div id="debugInfo" style="margin-top: 10px; font-size: 12px; color: #666;"></div>
+                <div id="viagensChart" style="width: 100%; height: 400px;"></div>
+                
+                <div id="noDataViagensMessage" style="display: none; text-align: center; padding: 50px;">
+                    <i class="fa fa-info-circle fa-3x text-muted"></i>
+                    <p class="text-muted">Nenhuma viagem encontrada para o ano selecionado.</p>
+                </div>
             </div>
         </div>
     </div>
+    
     <div class="col-sm-4">
-        <div class="panel panel-secondary">
+        <div class="panel panel-secondary" data-collapsed="0">
             <div class="panel-heading">
-                <div class="panel-title">Informações</div>
+                <div class="panel-title">Vendas por Cidade</div>
             </div>
             <div class="panel-body">
-                <p>Clique em uma fatia do gráfico para ver detalhes da cidade.</p>
-                <div id="cityStats">
-                    <div id="periodInfo" class="alert alert-info">
-                        <strong>Período:</strong> <span id="currentPeriod">Semana atual</span>
+                <div class="row" style="margin-bottom: 15px;">
+                    <div class="col-sm-6">
+                        <label>Data Inicial:</label>
+                        <input type="date" id="dataInicial" class="form-control form-control-sm"/>
                     </div>
+                    <div class="col-sm-6">
+                        <label>Data Final:</label>
+                        <input type="date" id="dataFinal" class="form-control form-control-sm" />
+                    </div>
+                    <div class="col-sm-12" style="margin-top: 10px;">
+                        <button type="button" id="filtrarBtn" class="btn btn-primary btn-sm btn-block">
+                            <i class="fa fa-search"></i> Filtrar
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="piechart" style="width: 100%; height: 250px;"></div>
+                
+                <div id="noDataMessage" style="display: none; text-align: center; padding: 30px;">
+                    <i class="fa fa-info-circle fa-2x text-muted"></i>
+                    <p class="text-muted">Nenhuma venda encontrada.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal para detalhes da cidade -->
-<div class="modal fade" id="cityDetailsModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Detalhes de Vendas - <span id="modalCityName"></span></h4>
-            </div>
-            <div class="modal-body">
-                <div id="cityDetailsContent">
-                    <div class="text-center">
-                        <i class="fa fa-spinner fa-spin fa-2x"></i>
-                        <p>Carregando dados...</p>
-                    </div>
+<div class="row" style="margin-top: 10px;">
+    <div class="col-sm-12">
+        <div id="estatisticasViagens" class="alert alert-info" style="display: none;">
+            <div class="row">
+                <div class="col-sm-3">
+                    <strong>Total de Viagens:</strong>
+                    <span id="totalViagensAno" class="badge badge-primary">0</span>
+                </div>
+                <div class="col-sm-3">
+                    <strong>Total de Passageiros:</strong>
+                    <span id="totalPassageirosAno" class="badge badge-success">0</span>
+                </div>
+                <div class="col-sm-3">
+                    <strong>Média Passageiros/Viagem:</strong>
+                    <span id="mediaPassageiros" class="badge badge-info">0</span>
+                </div>
+                <div class="col-sm-3">
+                    <strong>Mês com Mais Viagens:</strong>
+                    <span id="melhorMes" class="badge badge-warning">-</span>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
-            </div>
         </div>
+    </div>
+</div>
+
+<!-- Novo gráfico de vendas por cidade -->
+<div class="row" style="margin-top: 20px;">
+    <div class="col-sm-6">
+        <?php include __DIR__ . '../../../global/modulos/visao_geral/visao_geral_acesso_rapido.php'; ?>
     </div>
 </div>
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
-let currentData = [];
-let currentDateRange = {
-    inicial: null,
-    final: null
-};
+let currentCidadeData = [];
+let currentViagensData = [];
 
-google.charts.load('current', {'packages':['corechart']});
-google.charts.setOnLoadCallback(loadChartData);
+google.charts.load('current', {'packages':['corechart', 'bar']});
+google.charts.setOnLoadCallback(function() {
+    loadChartData(); // Carrega gráfico de cidades
+    loadViagensChart(); // Carrega gráfico de viagens
+});
 
-async function loadChartData(dataInicial = null, dataFinal = null) {
+// Função para carregar gráfico de viagens mensais
+async function loadViagensChart(ano) {
+ 
     try {
-        let url = 'api/vendas-cidades.php?action=chart-data';
+        const anoSelecionado = ano || document.getElementById('anoSelect').value;
+        const url = `api/vendas-cidades.php?action=viagens-mensais&ano=${anoSelecionado}`;
+        
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const result = await response.json();
+
+        if (!result.success) throw new Error(result.error || 'Erro desconhecido');
+        const data = result.data;
+        currentViagensData = data;
+
+        if (data.length === 0) {
+            document.getElementById('viagensChart').style.display = 'none';
+            document.getElementById('noDataViagensMessage').style.display = 'block';
+            document.getElementById('estatisticasViagens').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('viagensChart').style.display = 'block';
+        document.getElementById('noDataViagensMessage').style.display = 'none';
+
+        // Preparar dados para o gráfico de barras
+        var chartData = new google.visualization.DataTable();
+        chartData.addColumn('string', 'Mês');
+        chartData.addColumn('number', 'Viagens');
+        chartData.addColumn('number', 'Passageiros');
+
+        data.forEach(item => {
+            chartData.addRow([
+                item.nome_mes, 
+                parseInt(item.total_viagens) || 0, 
+                parseInt(item.total_passageiros) || 0
+            ]);
+        });
+
+        var options = {
+            title: `Viagens e Passageiros por Mês - ${anoSelecionado}`,
+            titleTextStyle: {
+                fontSize: 16,
+                bold: true
+            },
+            chartArea: {left: 80, top: 60, width: '75%', height: '70%'},
+            hAxis: {
+                title: 'Meses',
+                titleTextStyle: {fontSize: 12}
+            },
+            vAxes: {
+                0: {
+                    title: 'Quantidade de Viagens',
+                    titleTextStyle: {color: '#1f77b4', fontSize: 12}
+                },
+                1: {
+                    title: 'Número de Passageiros',
+                    titleTextStyle: {color: '#ff7f0e', fontSize: 12}
+                }
+            },
+            series: {
+                0: {
+                    type: 'columns',
+                    targetAxisIndex: 0,
+                    color: '#1f77b4'
+                },
+                1: {
+                    type: 'columns', 
+                    targetAxisIndex: 1,
+                    color: '#ff7f0e'
+                }
+            },
+            legend: {
+                position: 'top',
+                alignment: 'center'
+            }
+        };
+
+        var chart = new google.visualization.ComboChart(document.getElementById('viagensChart'));
+        chart.draw(chartData, options);
+
+        // Atualizar estatísticas
+        updateViagensStats(data, anoSelecionado);
+
+    } catch (error) {
+        document.getElementById('viagensChart').style.display = 'none';
+        document.getElementById('noDataViagensMessage').style.display = 'block';
+        document.getElementById('noDataViagensMessage').innerHTML = `
+            <i class="fa fa-exclamation-triangle fa-3x text-warning"></i>
+            <p class="text-warning">Erro ao carregar dados: ${error.message}</p>
+        `;
+    }
+}
+
+// Função para atualizar estatísticas das viagens
+function updateViagensStats(data, ano) {
+    const totalViagens = data.reduce((sum, item) => sum + parseInt(item.total_viagens || 0), 0);
+    const totalPassageiros = data.reduce((sum, item) => sum + parseInt(item.total_passageiros || 0), 0);
+    const mediaPassageiros = totalViagens > 0 ? (totalPassageiros / totalViagens).toFixed(1) : 0;
+    
+    // Encontrar mês com mais viagens
+    const melhorMesData = data.reduce((prev, current) => 
+        (parseInt(current.total_viagens) > parseInt(prev.total_viagens)) ? current : prev, data[0] || {});
+    const melhorMes = melhorMesData.nome_mes || '-';
+
+    document.getElementById('totalViagensAno').textContent = totalViagens;
+    document.getElementById('totalPassageirosAno').textContent = totalPassageiros;
+    document.getElementById('mediaPassageiros').textContent = mediaPassageiros;
+    document.getElementById('melhorMes').textContent = melhorMes;
+    document.getElementById('estatisticasViagens').style.display = 'block';
+}
+
+// Função original para gráfico de cidades (mantida)
+async function loadChartData(dataInicial, dataFinal) {
+    try {
+        let url = 'api/vendas-cidades.php';
         if (dataInicial && dataFinal) {
-            url += `&data_inicial=${dataInicial}&data_final=${dataFinal}`;
-            currentDateRange.inicial = dataInicial;
-            currentDateRange.final = dataFinal;
-            document.getElementById('currentPeriod').textContent = 
-                `${new Date(dataInicial).toLocaleDateString('pt-BR')} até ${new Date(dataFinal).toLocaleDateString('pt-BR')}`;
-        } else {
-            currentDateRange.inicial = null;
-            currentDateRange.final = null;
-            document.getElementById('currentPeriod').textContent = 'Semana atual';
+            url += `?data_inicial=${dataInicial}&data_final=${dataFinal}`;
         }
 
         const response = await fetch(url);
@@ -156,74 +276,51 @@ async function loadChartData(dataInicial = null, dataFinal = null) {
 
         if (!result.success) throw new Error(result.error || 'Erro desconhecido');
         const data = result.data;
-        currentData = data;
+        currentCidadeData = data;
 
         if (data.length === 0) {
             document.getElementById('piechart').style.display = 'none';
             document.getElementById('noDataMessage').style.display = 'block';
-            document.getElementById('noDataMessage').innerHTML = `
-                <i class="fa fa-info-circle fa-3x text-muted"></i>
-                <p class="text-muted">Nenhuma venda encontrada para o período selecionado.</p>
-                <p class="text-muted">Tente selecionar um período diferente ou aguarde novos dados.</p>
-            `;
             return;
         }
 
         document.getElementById('piechart').style.display = 'block';
         document.getElementById('noDataMessage').style.display = 'none';
 
-        // Ajuste para o novo SQL: cidade (origem) e total
         var chartData = new google.visualization.DataTable();
         chartData.addColumn('string', 'Cidade');
         chartData.addColumn('number', 'Total');
 
-        data.forEach(item => {
+        data.slice(0, 6).forEach(item => {
             chartData.addRow([item.cidade, parseInt(item.total)]);
         });
 
         var options = {
-            title: 'Passagens por Cidade de Origem',
+            title: 'Top Cidades',
             pieHole: 0.3,
-            legend: {position: 'right'},
-            chartArea: {left: 20, top: 50, width: '70%', height: '85%'}
+            legend: {position: 'bottom'},
+            chartArea: {left: 10, top: 30, width: '90%', height: '60%'},
+            titleTextStyle: {fontSize: 14}
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('piechart'));
         chart.draw(chartData, options);
 
-        // Atualizar estatísticas do período
-        updatePeriodStats(data);
-
     } catch (error) {
         document.getElementById('piechart').style.display = 'none';
         document.getElementById('noDataMessage').style.display = 'block';
-        document.getElementById('noDataMessage').innerHTML = `
-            <i class="fa fa-exclamation-triangle fa-3x text-warning"></i>
-            <p class="text-warning">Erro ao carregar dados: ${error.message}</p>
-            <p class="text-muted">Verifique a conexão com o banco de dados.</p>
-        `;
     }
 }
 
-// Atualizar estatísticas do período
-function updatePeriodStats(data) {
-    const totalPassagens = data.reduce((sum, item) => sum + parseInt(item.total), 0);
-    const totalCidades = data.length;
-    document.getElementById('cityStats').innerHTML = `
-        <div id="periodInfo" class="alert alert-info">
-            <strong>Período:</strong> <span id="currentPeriod">${document.getElementById('currentPeriod').textContent}</span>
-        </div>
-        <div class="well well-sm">
-            <h5><i class="fa fa-bar-chart"></i> Resumo do Período</h5>
-            <ul class="list-unstyled">
-                <li><strong>Total de Passagens:</strong> ${totalPassagens}</li>
-                <li><strong>Cidades Atendidas:</strong> ${totalCidades}</li>
-            </ul>
-        </div>
-    `;
-}
-
+// Event listeners
 document.addEventListener('DOMContentLoaded', function() {
+    // Filtro do gráfico de viagens
+    document.getElementById('filtrarViagensBtn').addEventListener('click', function() {
+        const ano = document.getElementById('anoSelect').value;
+        loadViagensChart(ano);
+    });
+
+    // Filtro original do gráfico de cidades
     document.getElementById('filtrarBtn').addEventListener('click', function() {
         const dataInicial = document.getElementById('dataInicial').value;
         const dataFinal = document.getElementById('dataFinal').value;
@@ -237,13 +334,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         loadChartData(dataInicial, dataFinal);
     });
-
-    document.getElementById('limparFiltroBtn').addEventListener('click', function() {
-        document.getElementById('dataInicial').value = '';
-        document.getElementById('dataFinal').value = '';
-        loadChartData();
-    });
 });
 </script>
-
-<?php include __DIR__ . '../../../global/modulos/visao_geral/visao_geral_acesso_rapido.php'; ?>
